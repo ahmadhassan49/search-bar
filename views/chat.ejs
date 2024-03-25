@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <section>
+        <div class="data-wrap">
+            <h1>Welcome to Chat Panda Database</h1>
+            <div class="input-wrap">
+                <input type="text" id="searchInput" placeholder="Please enter">
+            </div>
+            <div class="tabel_wrap table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Sr.No</th>
+                            <th>Name</th>
+                            <th>Designation</th>
+                            <th>Company</th>
+                            <th>Email</th>
+                            <th>Email 2</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+                <div id="pagination-box" class="pagination"></div>
+            </div>
+        </div>
+    </section>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Additional Information</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <td>Phone:</td>
+                                <td id="modalPhone"></td>
+                            </tr>
+                            <tr>
+                                <td>Employees Count:</td>
+                                <td id="modalEmployeesCount"></td>
+                            </tr>
+                            <tr>
+                                <td>Industry:</td>
+                                <td id="modalIndustry"></td>
+                            </tr>
+                            <tr>
+                                <td>Person LinkedIn:</td>
+                                <td id="modalPersonLinkedIn"></td>
+                            </tr>
+                            <tr>
+                                <td>Website:</td>
+                                <td id="modalWebsite"></td>
+                            </tr>
+                            <tr>
+                                <td>Company LinkedIn:</td>
+                                <td id="modalCompanyLinkedIn"></td>
+                            </tr>
+                            <tr>
+                                <td>State:</td>
+                                <td id="modalState"></td>
+                            </tr>
+                            <tr>
+                                <td>Annual Revenue:</td>
+                                <td id="modalAnnualRevenue"></td>
+                            </tr>
+                            <tr>
+                                <td>Tag Name:</td>
+                                <td id="modalTagName"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('#searchInput').on('input', function () {
+                var searchTerm = $(this).val().toLowerCase();
+                $('#tableBody').empty();
+                if (searchTerm.length > 2) {
+                    <% result.forEach((item, index) => { %>
+                        var rowData = "<tr>";
+                    rowData += "<td>" + '<%= item.id %>' + "</td>";
+                    rowData += "<td>" + '<%= item.name %>' + "</td>";
+                    rowData += "<td>" + '<%= item.designation %>' + "</td>";
+                    rowData += "<td>" + '<%= item.company %>' + "</td>";
+                    rowData += "<td>" + '<%= item.email %>' + "</td>";
+                    rowData += "<td>" + '<%= item.email_2 %>' + "</td>";
+                    rowData += "<td><button class='open-modal btn btn-primary' data-toggle='modal' data-target='#myModal' data-name='<%= item.name %>' data-designation='<%= item.designation %>'>Open</button></td>";
+                    rowData += "<td>" + '<%= item.phone %>' + "</td>";
+                    rowData += "<td>" + '<%= item.employees_count %>' + "</td>";
+                    rowData += "<td>" + '<%= item.industry %>' + "</td>";
+                    rowData += "<td><a href='<%= item.person_linkedin_url %>' target='_blank'>" + '<%= item.person_linkedin_url %>' + "</a></td>";
+                    rowData += "<td><a href='<%= item.website %>' target='_blank'>" + '<%= item.website %>' + "</a></td>";
+                    rowData += "<td><a href='<%= item.company_linkedin_url %>' target='_blank'>" + '<%= item.company_linkedin_url %>' + "</a></td>";
+                    rowData += "<td>" + '<%= item.state %>' + "</td>";
+                    rowData += "<td>" + '<%= item.annual_revenue %>' + "</td>";
+                    rowData += "<td>" + '<%= item.tag_name %>' + "</td>";
+                    rowData += "</tr>";
+                    if (rowData.toLowerCase().includes(searchTerm)) {
+                        $('#tableBody').append(rowData);
+                    }
+                    <% }) %>
+                        paginateData();
+                } else {
+                    $('#pagination-box').empty();
+                }
+            });
+
+            function paginateData() {
+                let allrow = $("#tableBody tr").length;
+                if (allrow > 5) {
+                    $('#pagination-box').empty();
+                    let totalPages = Math.ceil(allrow / 5);
+                    for (let i = 1; i <= totalPages; i++) {
+                        $('#pagination-box').append(`<button class='btn pagination-btn' data-page='${i}'>${i}</button>`);
+                    }
+                    showPage(1);
+                }
+            }
+
+            function showPage(pageNumber) {
+                $('#tableBody tr').hide();
+                let startIndex = (pageNumber - 1) * 5;
+                let endIndex = startIndex + 5;
+                $('#tableBody tr').slice(startIndex, endIndex).show();
+                $('.pagination-btn').removeClass('active');
+                $(`.pagination-btn[data-page=${pageNumber}]`).addClass('active');
+            }
+
+            $(document).on('click', '.open-modal', function () {
+                var phone = $(this).closest('tr').find('td:eq(7)').text();
+                var employeesCount = $(this).closest('tr').find('td:eq(8)').text();
+                var industry = $(this).closest('tr').find('td:eq(9)').text();
+                var personLinkedIn = $(this).closest('tr').find('td:eq(10) a').attr('href');
+                var website = $(this).closest('tr').find('td:eq(11) a').attr('href');
+                var companyLinkedIn = $(this).closest('tr').find('td:eq(12) a').attr('href');
+                var state = $(this).closest('tr').find('td:eq(13)').text();
+                var annualRevenue = $(this).closest('tr').find('td:eq(14)').text();
+                var tagName = $(this).closest('tr').find('td:eq(15)').text();
+                $('#modalPhone').text(phone);
+                $('#modalEmployeesCount').text(employeesCount);
+                $('#modalIndustry').text(industry);
+                $('#modalPersonLinkedIn').html('<a href="' + personLinkedIn + '" target="_blank">' + personLinkedIn + '</a>');
+                $('#modalWebsite').html('<a href="' + website + '" target="_blank">' + website + '</a>');
+                $('#modalCompanyLinkedIn').html('<a href="' + companyLinkedIn + '" target="_blank">' + companyLinkedIn + '</a>');
+                $('#modalState').text(state);
+                $('#modalAnnualRevenue').text(annualRevenue);
+                $('#modalTagName').text(tagName);
+            });
+
+            $(document).on('click', '.pagination-btn', function () {
+                let pageNumber = $(this).data('page');
+                showPage(pageNumber);
+            });
+        });
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
